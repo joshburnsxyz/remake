@@ -79,6 +79,29 @@ If a `target` is defined for a task, ReMake will check for the specified file(s)
 
 ## Installation
 
-__Coming Soon__
+### Release Binary
 
-Stay tuned for instructions on how to install ReMake.
+A prebuilt binary is available for download from the [Github Release Page](https://github.com/joshburnsxyz/remake/releases). I am not sure
+about how well this work for you. And any feedback on how a prebuilt binary works on other systems would be appreciated. For the sake of documentation
+the binary was built on a M1 Macbook.
+
+### From source
+
+1. Clone the repository
+
+```
+$ git clone https://github.com/joshburnsxyz/remake
+```
+
+2. Run the `cargo build` command in the remake directory.
+
+```
+$ cd remake
+$ cargo build --release
+```
+
+3. Move the `remake` binary into your `$PATH`
+
+```
+$ sudo mv ./target/release/remake /usr/bin/remake
+```

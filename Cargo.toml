@@ -12,6 +12,11 @@ license = "GNU GPLv3"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[package.metadata.bundle]
+identifier = "xyz.joshburns.remake"
+linux_use_terminal = true
+category = "Developer Tool"
+
 [dependencies]
 clap = "4.3.4"
 serde =  { version = "1.0", features = ["derive"] }
