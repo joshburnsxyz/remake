@@ -28,8 +28,13 @@ fn main() {
 
     let tasks = task::parse_taskfile(FILENAME);
 
-    if let Some(task) = matches.get_one::<String>("task") {
-        println!("Value for name: {task}");
+    if let Some(task_arg) = matches.get_one::<String>("task") {
+        if let Some(task) = tasks.get(task_arg) {
+            task.execute();
+        } else {
+            // Task not found
+            println!("Task '{}' not found.", task_arg);
+        }
     } else {
         list_available_tasks(tasks);
     }
