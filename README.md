@@ -41,11 +41,17 @@ quiet=true
 
 This will run the `clean` task before the `build`.
 
+We also support the ability to check for a `target`, A target simply defines a set of filepaths that *should* exist after a task has run.
+
+``` toml
+[build]
+command="cargo build"
+dependencies=["clean"]
+target=["myprogram"]
+```
+
+if a `target` is defined, remake will look for it after the task has executed, and exit non-zero if the file cannot be found.
+
 ## Installation
 
 __Coming Soon__
-
-## Todo
-
-- [x] Dependant tasks
-- [ ] Targets (replicate `.PHONY` functionality from traditional `Makefiles`)
