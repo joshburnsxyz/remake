@@ -2,8 +2,8 @@ use std::io;
 use std::fs;
 use std::io::Write;
 use std::collections::HashMap;
-use std::process::{Command, exit};
-use std::path::PathBuf;
+use std::process::{Command};
+
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
