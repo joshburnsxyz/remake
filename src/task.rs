@@ -10,6 +10,7 @@ pub struct Task {
     pub command: String,
     pub quiet: bool,
     pub dependencies: Option<Vec<String>>,
+    pub target: Option<String>,
 }
 
 impl Task {
@@ -40,15 +41,18 @@ fn extract_tasks(parsed_toml: &toml::Value) -> HashMap<String, Task> {
 
     if let toml::Value::Table(table) = parsed_toml {
         for (task_name, task_value) in table {
+            // Parse command to run
             let command = task_value["command"]
                 .as_str()
                 .expect("Invalid command.")
                 .to_string();
 
+            // Parse the quiet flag
             let quiet = task_value.get("quiet")
                 .and_then(|quiet_value| quiet_value.as_bool())
                 .unwrap_or(false);
 
+            // Parse dependency tasks
             let dependencies = task_value.get("dependencies")
                 .and_then(|dependencies_value| dependencies_value.as_array())
                 .map(|dependencies|{
@@ -59,7 +63,11 @@ fn extract_tasks(parsed_toml: &toml::Value) -> HashMap<String, Task> {
                     .collect::<Vec<String>>()
                 });
 
-            let task = Task { command, quiet, dependencies };
+            let target = task_value.get("target")
+                .and_then(|target_value| target_value.as_str())
+                .unwrap_or_default();
+
+            let task = Task { command, quiet, dependencies, target };
             tasks.insert(task_name.to_string(), task);
         }
     }
