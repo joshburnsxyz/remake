@@ -1,6 +1,7 @@
 use std::path::Path;
 use std::collections::HashMap;
 use clap::{arg, value_parser, Command};
+use std::process::exit;
 
 mod task;
 
@@ -47,6 +48,14 @@ fn main() {
             // Execute called task
             println!("Executing task: {}", task_arg);
             task.execute();
+
+            // Check for existence of the target
+            if let Some(_target) = &task.target {
+                task.check_target();
+            } else {
+                exit(0);
+            }
+
         } else {
             // Task not found
             println!("Task '{}' not found.", task_arg);

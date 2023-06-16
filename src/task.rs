@@ -2,7 +2,8 @@ use std::io;
 use std::fs;
 use std::io::Write;
 use std::collections::HashMap;
-use std::process::Command;
+use std::process::{Command, exit};
+use std::path::PathBuf;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -10,7 +11,7 @@ pub struct Task {
     pub command: String,
     pub quiet: bool,
     pub dependencies: Option<Vec<String>>,
-    pub target: Option<String>,
+    pub targets: Option<Vec<String>>,
 }
 
 impl Task {
@@ -24,6 +25,12 @@ impl Task {
         if !self.quiet {
             io::stdout().write_all(&output.stdout).unwrap();
             io::stderr().write_all(&output.stderr).unwrap();
+        }
+    }
+
+    pub fn check_target(&self) {
+        if let Some(target) = &self.target {
+             // FIXME: Build pathBuf and check if it exists
         }
     }
 }
@@ -63,10 +70,18 @@ fn extract_tasks(parsed_toml: &toml::Value) -> HashMap<String, Task> {
                     .collect::<Vec<String>>()
                 });
 
-            let target = task_value.get("target")
-                .and_then(|target_value| Some(target_value.to_string()));
+            // Parse dependency tasks
+            let targets = task_value.get("targets")
+                .and_then(|targets_value| targets_value.as_array())
+                .map(|targets|{
+                    targets
+                    .iter()
+                    .filter_map(|target_value| target_value.as_str())
+                    .map(|target| target.to_string())
+                    .collect::<Vec<String>>()
+                });
 
-            let task = Task { command, quiet, dependencies, target };
+            let task = Task { command, quiet, dependencies, targets };
             tasks.insert(task_name.to_string(), task);
         }
     }
