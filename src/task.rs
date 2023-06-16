@@ -52,6 +52,7 @@ fn extract_tasks(parsed_toml: &toml::Value) -> HashMap<String, Task> {
             let dependencies = task_value.get("dependencies")
                 .and_then(|dependencies_value| dependencies_value.as_array())
                 .map(|dependencies|{
+                    dependencies
                     .iter()
                     .filter_map(|dependency_value| dependency_value.as_str())
                     .map(|dependency| dependency.to_string())
