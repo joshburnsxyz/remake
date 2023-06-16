@@ -3,11 +3,13 @@ use std::fs;
 use std::io::Write;
 use std::collections::HashMap;
 use std::process::Command;
+use serde::Deserialize;
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct Task {
     pub command: String,
     pub quiet: bool,
+    pub dependencies: Option<Vec<String>>,
 }
 
 impl Task {
@@ -47,7 +49,16 @@ fn extract_tasks(parsed_toml: &toml::Value) -> HashMap<String, Task> {
                 .and_then(|quiet_value| quiet_value.as_bool())
                 .unwrap_or(false);
 
-            let task = Task { command, quiet };
+            let dependencies = task_value.get("dependencies")
+                .and_then(|dependencies_value| dependencies_value.as_array())
+                .map(|dependencies|{
+                    .iter()
+                    .filter_map(|dependency_value| dependency_value.as_str())
+                    .map(|dependency| dependency.to_string())
+                    .collect::<Vec<String>>()
+                });
+
+            let task = Task { command, quiet, dependencies };
             tasks.insert(task_name.to_string(), task);
         }
     }
