@@ -30,6 +30,20 @@ fn main() {
 
     if let Some(task_arg) = matches.get_one::<String>("task") {
         if let Some(task) = tasks.get(task_arg) {
+            // Execute task dependencies
+            if let Some(dependencies) = &task.dependencies {
+                for dependency in dependencies {
+                    if let Some(dependency_task) = tasks.get(dependency) {
+                        println!("Executing dependency task: {}", dependency);
+                        dependency_task.execute();
+                    } else {
+                        println!("Dependency task '{}' not found.", dependency);
+                    }
+                }
+            }
+
+            // Execute called task
+            println!("Executing task: {}", task_arg);
             task.execute();
         } else {
             // Task not found
