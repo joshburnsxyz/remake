@@ -28,10 +28,13 @@ impl Task {
         }
     }
 
-    pub fn check_target(&self) {
-        if let Some(target) = &self.target {
-             // FIXME: Build pathBuf and check if it exists
-        }
+    pub fn check_targets(&self) {
+            if let Some(targets) = &self.targets {
+                for target in targets {
+                    println!("Checking target: {}", target);
+                }
+            }
+
     }
 }
 

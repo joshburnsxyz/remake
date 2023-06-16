@@ -14,7 +14,7 @@ fn list_available_tasks(tasks: HashMap<String, task::Task>) {
         println!("Command: {}", task.command);
         println!("Quiet: {}\n", task.quiet);
         println!("Dependencies: {:?}\n", task.dependencies);
-        println!("Target: {:?}\n", task.target);
+        println!("Targets: {:?}\n", task.targets);
     }
 }
 
@@ -48,14 +48,7 @@ fn main() {
             // Execute called task
             println!("Executing task: {}", task_arg);
             task.execute();
-
-            // Check for existence of the target
-            if let Some(_target) = &task.target {
-                task.check_target();
-            } else {
-                exit(0);
-            }
-
+            task.check_targets();
         } else {
             // Task not found
             println!("Task '{}' not found.", task_arg);
