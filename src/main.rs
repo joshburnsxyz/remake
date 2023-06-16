@@ -4,11 +4,9 @@ use std::path::Path;
 
 use toml::Value;
 
-#[derive(Debug)]
-struct Task {
-    command: String,
-    quiet: bool,
-}
+mod task;
+
+use task::Task;
 
 fn parse_taskfile(file_path: &str) -> HashMap<String, Task> {
     // Read the TOML file
