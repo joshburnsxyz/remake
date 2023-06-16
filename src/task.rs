@@ -64,8 +64,7 @@ fn extract_tasks(parsed_toml: &toml::Value) -> HashMap<String, Task> {
                 });
 
             let target = task_value.get("target")
-                .and_then(|target_value| target_value.as_str())
-                .unwrap_or_default();
+                .and_then(|target_value| Some(target_value.to_string()));
 
             let task = Task { command, quiet, dependencies, target };
             tasks.insert(task_name.to_string(), task);

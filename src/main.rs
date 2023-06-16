@@ -12,6 +12,8 @@ fn list_available_tasks(tasks: HashMap<String, task::Task>) {
         println!("Task: {}", task_name);
         println!("Command: {}", task.command);
         println!("Quiet: {}\n", task.quiet);
+        println!("Dependencies: {:?}\n", task.dependencies);
+        println!("Target: {:?}\n", task.target);
     }
 }
 
