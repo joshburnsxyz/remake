@@ -21,16 +21,19 @@ fn parse_taskfile(file_path: &str) -> HashMap<String, Task> {
     // Iterate over the TOML table entries
     if let Value::Table(table) = parsed_toml {
         for (task_name, task_value) in table {
-            let task = Task {
-                command: task_value["command"]
-                    .as_str()
-                    .expect("Invalid command.")
-                    .to_string(),
-                quiet: task_value["quiet"]
-                    .as_bool()
-                    .expect("Invalid quiet setting."),
-            };
+            // Parse command string
+            let command = task_value["command"]
+                .as_str()
+                .expect("Invalid command.")
+                .to_string();
 
+            // Parse quiet settings true/false (default to false)
+            let quiet = task_value["quiet"]
+                .as_bool()
+                .unwrap_or(false); // Assigns false as default if not provided
+
+            // Build task and add to hashmap
+            let task = Task { command, quiet };
             tasks.insert(task_name.to_string(), task);
         }
     }
