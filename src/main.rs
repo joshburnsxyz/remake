@@ -1,14 +1,14 @@
-use std::path::Path;
+use std::io;
+use std::fs;
+use std::io::Write;
 use std::collections::HashMap;
-use clap::{arg, value_parser, Command};
-
+use std::process::{Command, exit};
 
 mod task;
 
 const FILENAME: &str = "tasks.toml";
 
-fn list_available_tasks(tasks: HashMap<String, task::Task>) {
-     // Print the tasks
+fn list_available_tasks(tasks: &HashMap<String, task::Task>) {
     for (task_name, task) in tasks {
         println!("Task: {}", task_name);
         println!("Command: {}", task.command);
@@ -19,41 +19,41 @@ fn list_available_tasks(tasks: HashMap<String, task::Task>) {
 }
 
 fn main() {
-    let matches = Command::new("remake")
-        .arg(arg!([task] "Task to run").value_parser(value_parser!(String)))
-        .get_matches();
-
-    // Verify if the file exists
-    if !Path::new(FILENAME).exists() {
+    if !std::path::Path::new(FILENAME).exists() {
         println!("Task file does not exist.");
-        return;
+        exit(1);
     }
 
-    let tasks = task::parse_taskfile(FILENAME);
+    match task::parse_taskfile(FILENAME) {
+        Ok(tasks) => {
+            let matches = clap::App::new("remake")
+                .arg(clap::Arg::new("task")
+                    .about("Task to run")
+                    .value_name("TASK")
+                    .index(1))
+                .get_matches();
 
-    if let Some(task_arg) = matches.get_one::<String>("task") {
-        if let Some(task) = tasks.get(task_arg) {
-            // Execute task dependencies
-            if let Some(dependencies) = &task.dependencies {
-                for dependency in dependencies {
-                    if let Some(dependency_task) = tasks.get(dependency) {
-                        println!("Executing dependency task: {}", dependency);
-                        dependency_task.execute();
-                    } else {
-                        println!("Dependency task '{}' not found.", dependency);
+            if let Some(task_arg) = matches.value_of("task") {
+                match tasks.get(task_arg) {
+                    Some(task) => {
+                        if let Err(err) = task.execute() {
+                            println!("Error executing task '{}': {}", task_arg, err);
+                            exit(1);
+                        }
+                        task.check_targets();
+                    }
+                    None => {
+                        println!("Task '{}' not found.", task_arg);
+                        exit(1);
                     }
                 }
+            } else {
+                list_available_tasks(&tasks);
             }
-
-            // Execute called task
-            println!("Executing task: {}", task_arg);
-            task.execute();
-            task.check_targets();
-        } else {
-            // Task not found
-            println!("Task '{}' not found.", task_arg);
         }
-    } else {
-        list_available_tasks(tasks);
+        Err(err) => {
+            println!("Error parsing task file: {}", err);
+            exit(1);
+        }
     }
 }
