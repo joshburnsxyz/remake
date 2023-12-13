@@ -100,5 +100,5 @@ fn extract_tasks(parsed_toml: &toml::Value) -> HashMap<String, Task> {
         }
     }
 
-    tasks
+    return tasks
 }
